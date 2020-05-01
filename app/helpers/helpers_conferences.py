@@ -1,18 +1,11 @@
-import pymysql
-from flask import current_app, jsonify
 import datetime
+
+import pymysql
+
+from app.helpers.helpers_database import get_connection
 
 valid_conference_fields = {'title', 'country', 'location', 'start_date', 'end_date', 'path_to_description',
                            'path_to_logo'}
-
-
-def get_connection():
-    port = int(current_app.config['DB_PORT'])
-    return pymysql.connect(host=current_app.config['DB_HOST'],
-                           port=port,
-                           user=current_app.config['DB_USER'],
-                           passwd=current_app.config['DB_PASS'],
-                           db=current_app.config['DB_NAME'])
 
 
 def create_conference(conference):
@@ -67,11 +60,11 @@ def update_conference(conference):
                                              title,))
                 if affected_rows > 0:
                     conn.commit()
+                    conn.close()
+                    return f'Conference {title} updated successfully.', 200
                 else:
                     conn.close()
                     return f'Conference {title} either does not exist or it has not been modified.', 204
-                conn.close()
-                return f'Conference {title} updated successfully.', 200
             except Exception as e:
                 print(e)
                 conn.close()
@@ -95,8 +88,3 @@ def delete_conference(conference):
             print(e)
             conn.close()
             return f'Something went wrong while deleting conference {title}.', 500
-
-
-def verify_role(current_user):
-    if 'ADMINISTRATOR' not in current_user['roles']:
-        return jsonify({"msg": "Invalid role for request"}), 403

@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.helpers import create_conference, update_conference, delete_conference, verify_role
+from app.helpers.helpers_conferences import create_conference, update_conference, delete_conference
+from app.helpers.helpers_authorization import verify_administrator
 
-app = Blueprint("admin", __name__, url_prefix="")
+app = Blueprint("admin_conferences", __name__, url_prefix="")
 
 
 @app.route("/api/admin/conferences", methods=['POST'])
@@ -69,7 +70,7 @@ def admin_create_conferences():
                             type: string
                             example: Something went wrong while creating conference Conferinta.
         """
-    verify_role(get_jwt_identity())
+    verify_administrator(get_jwt_identity())
     conference = request.json
     response, status_code = create_conference(conference)
     return jsonify({"msg": response}), status_code
@@ -146,7 +147,7 @@ def admin_update_conferences():
                                 type: string
                                 example: Something went wrong while updating conference Conferinta.
             """
-    verify_role(get_jwt_identity())
+    verify_administrator(get_jwt_identity())
     conference = request.json
     response, status_code = update_conference(conference)
     return jsonify({"msg": response}), status_code
@@ -203,7 +204,7 @@ def admin_delete_conferences():
                             type: string
                             example: Something went wrong while creating conference Conferinta.
         """
-    verify_role(get_jwt_identity())
+    verify_administrator(get_jwt_identity())
     conference = request.json
     response, status_code = delete_conference(conference)
     return jsonify({"msg": response}), status_code
