@@ -1,6 +1,8 @@
 import base64
 
 import pymysql
+from flask import current_app
+from flask_mail import Message, Mail
 from passlib.handlers.bcrypt import bcrypt
 
 from app.helpers.helpers_database import get_connection
@@ -12,6 +14,7 @@ def create_users(users):
         try:
             if not isinstance(users, list):
                 users = [users]
+            email_list = []
             for user in users:
                 username = user['username']
                 password = bcrypt.encrypt(base64.b64decode(user['password']).decode("utf-8"))
@@ -24,8 +27,13 @@ def create_users(users):
                     'INSERT INTO user(username, password, first_name, last_name, valid_account, is_phd,'
                     ' educational_title) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                     (username, password, first_name, last_name, valid_account, is_phd, educational_title,))
+                email_list.append(username)
             conn.commit()
             conn.close()
+            mail = Mail(current_app)
+            msg = Message(subject='Account created.', sender=current_app.config['MAIL_USERNAME'], recipients=email_list)
+            msg.body = "Your account has been created, download the conference application to activate your account!"
+            mail.send(msg)
             return f'Users created successfully.', 200
         except Exception as e:
             print(e)

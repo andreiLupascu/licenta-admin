@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.helpers.helpers_user_management import create_users, update_users, delete_users
 from app.helpers.helpers_authorization import verify_administrator
+from app.helpers.helpers_user_management import create_users, update_users, delete_users
 
 app = Blueprint("admin_user_management", __name__, url_prefix="")
 
