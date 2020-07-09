@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.helpers.helpers_conferences import create_conference, update_conference, delete_conference
-from app.helpers.helpers_authorization import verify_administrator
+from app.helpers.helpers_authorization import verify_administrator, verify_program_committee
+from app.helpers.helpers_conferences import create_conference, update_conference, delete_conference, \
+    update_conference_sessions
 
 app = Blueprint("admin_conferences", __name__, url_prefix="")
 
@@ -150,6 +151,15 @@ def admin_update_conferences():
     verify_administrator(get_jwt_identity())
     conference = request.json
     response, status_code = update_conference(conference)
+    return jsonify({"msg": response}), status_code
+
+
+@app.route("/api/admin/conferences/sessions", methods=['PUT'])
+@jwt_required
+def admin_add_sessions():
+    verify_program_committee(get_jwt_identity())
+    sessions = request.json
+    response, status_code = update_conference_sessions(sessions)
     return jsonify({"msg": response}), status_code
 
 

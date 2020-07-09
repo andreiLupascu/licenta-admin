@@ -2,6 +2,7 @@ import datetime
 
 import pymysql
 
+from app.helpers.extensions import mongo
 from app.helpers.helpers_database import get_connection
 
 valid_conference_fields = {'title', 'country', 'location', 'start_date', 'end_date', 'path_to_description',
@@ -69,6 +70,14 @@ def update_conference(conference):
                 print(e)
                 conn.close()
                 return f'Something went wrong while updating conference {title}.', 500
+
+
+def update_conference_sessions(sessions):
+    if not isinstance(sessions, list):
+        sessions = [sessions]
+    for session in sessions:
+        mongo.db.session.update({"eventId": session['eventId']}, session, True)
+    return "Sessions updated successfully", 200
 
 
 def delete_conference(conference):
