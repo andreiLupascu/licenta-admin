@@ -99,6 +99,12 @@ def delete_users(users):
             affected_rows = [0] * len(users)
             for user in users:
                 username = user['username']
+                cur.execute('SELECT id FROM conference_user_role WHERE user_id = (SELECT id FROM user WHERE username=%s)', (username,))
+                ids = cur.fetchall()
+                for id_object in ids:
+                    conf_user_role_id = id_object['id']
+                    cur.execute('DELETE FROM conference_user_role WHERE id=%s', (conf_user_role_id,))
+                conn.commit()
                 affected_rows[users.index(user)] = cur.execute('DELETE FROM user WHERE username=%s;', (username,))
             if 0 not in affected_rows:
                 conn.commit()
