@@ -23,12 +23,22 @@ def create_users(users):
                 valid_account = user['valid_account']
                 is_phd = user['is_phd']
                 educational_title = user['educational_title']
+                roles = user['roles']
+                conference_id = user['conference_id']
                 cur.execute(
                     'INSERT INTO user(username, password, first_name, last_name, valid_account, is_phd,'
                     ' educational_title) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                     (username, password, first_name, last_name, valid_account, is_phd, educational_title,))
+                conn.commit()
+                cur.execute('SELECT LAST_INSERT_ID()')
+                user_id = cur.fetchone()['LAST_INSERT_ID()']
+                for role in roles:
+                    cur.execute(
+                        'INSERT INTO conference_user_role(conference_id, user_id, role_id) values (%s, %s, %s)',
+                        (conference_id, user_id, role,)
+                    )
+                    conn.commit()
                 email_list.append(username)
-            conn.commit()
             conn.close()
             mail = Mail(current_app)
             msg = Message(subject='Account created.', sender=current_app.config['MAIL_USERNAME'], recipients=email_list)
