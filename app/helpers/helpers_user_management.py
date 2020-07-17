@@ -129,7 +129,7 @@ def get_users():
             cur.execute('SELECT id, username, first_name, last_name, is_phd, educational_title FROM user')
             users = cur.fetchall()
             for user in users:
-                cur.execute('SELECT role_id FROM conference_user_role WHERE user_id=%s', (user['id'],))
+                cur.execute('SELECT conference_id, role_id FROM conference_user_role WHERE user_id=%s', (user['id'],))
                 roles = cur.fetchall()
                 user['roles'] = roles
             return users, 200
