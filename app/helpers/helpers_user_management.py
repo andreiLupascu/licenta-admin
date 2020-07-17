@@ -132,6 +132,7 @@ def get_users():
                 cur.execute('SELECT conference_id, role_id FROM conference_user_role WHERE user_id=%s', (user['id'],))
                 roles = cur.fetchall()
                 user['roles'] = roles
+            conn.close()
             return users, 200
         except Exception as e:
             print(e)
