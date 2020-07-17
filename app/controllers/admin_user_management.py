@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.helpers.helpers_authorization import verify_administrator
-from app.helpers.helpers_user_management import create_users, update_users, delete_users
+from app.helpers.helpers_user_management import create_users, update_users, delete_users, get_users
 
 app = Blueprint("admin_user_management", __name__, url_prefix="")
 
@@ -226,4 +226,13 @@ def admin_delete_user():
     verify_administrator(get_jwt_identity())
     users = request.json
     response, status_code = delete_users(users)
+    return jsonify({"msg": response}), status_code
+
+
+@app.route("/api/admin/users", methods=['GET'])
+@jwt_required
+def admin_get_user():
+    verify_administrator(get_jwt_identity())
+    users = request.json
+    response, status_code = get_users()
     return jsonify({"msg": response}), status_code

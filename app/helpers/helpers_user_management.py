@@ -99,7 +99,9 @@ def delete_users(users):
             affected_rows = [0] * len(users)
             for user in users:
                 username = user['username']
-                cur.execute('SELECT id FROM conference_user_role WHERE user_id = (SELECT id FROM user WHERE username=%s)', (username,))
+                cur.execute(
+                    'SELECT id FROM conference_user_role WHERE user_id = (SELECT id FROM user WHERE username=%s)',
+                    (username,))
                 ids = cur.fetchall()
                 for id_object in ids:
                     conf_user_role_id = id_object['id']
@@ -117,3 +119,21 @@ def delete_users(users):
             print(e)
             conn.close()
             return f'Something went wrong while deleting users.', 500
+
+
+def get_users():
+    conn = get_connection()
+    with conn.cursor(pymysql.cursors.DictCursor) as cur:
+        try:
+            users = []
+            cur.execute('SELECT id, username, first_name, last_name, is_phd, educational_title FROM user')
+            users = cur.fetchall()
+            for user in users:
+                cur.execute('SELECT role_id FROM conference_user_role WHERE user_id=%s', (user['id'],))
+                roles = cur.fetchall()
+                user['roles'] = roles
+            return users, 200
+        except Exception as e:
+            print(e)
+            conn.close()
+            return "Database error.", 500
