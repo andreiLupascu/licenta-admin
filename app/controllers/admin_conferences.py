@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.helpers.helpers_authorization import verify_administrator, verify_program_committee
 from app.helpers.helpers_conferences import create_conference, update_conference, delete_conference, \
-    update_conference_sessions
+    update_conference_sessions, delete_session
 
 app = Blueprint("admin_conferences", __name__, url_prefix="")
 
@@ -160,6 +160,15 @@ def admin_add_sessions():
     verify_program_committee(get_jwt_identity())
     sessions = request.json
     response, status_code = update_conference_sessions(sessions)
+    return jsonify({"msg": response}), status_code
+
+
+@app.route("/api/admin/conferences/sessions", methods=['DELETE'])
+@jwt_required
+def admin_delete_sessions():
+    verify_program_committee(get_jwt_identity())
+    event_id = request.json['eventId']
+    response, status_code = delete_session(event_id)
     return jsonify({"msg": response}), status_code
 
 

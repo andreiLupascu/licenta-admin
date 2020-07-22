@@ -80,6 +80,11 @@ def update_conference_sessions(sessions):
     return "Sessions updated successfully", 200
 
 
+def delete_session(event_id):
+    mongo.db.session.delete_one({"eventId": event_id})
+    return "", 204
+
+
 def delete_conference(conference):
     title = conference['title']
     conn = get_connection()
