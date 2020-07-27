@@ -28,8 +28,8 @@ def create_users(users):
                 conference_id = user['conference_id']
                 cur.execute(
                     'INSERT INTO user(username, password, first_name, last_name, valid_account, is_phd,'
-                    ' educational_title) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                    (username, password, first_name, last_name, valid_account, is_phd, educational_title,))
+                    ' educational_title, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                    (username, password, first_name, last_name, valid_account, is_phd, educational_title, 0,))
                 conn.commit()
                 cur.execute('SELECT LAST_INSERT_ID()')
                 user_id = cur.fetchone()['LAST_INSERT_ID()']
