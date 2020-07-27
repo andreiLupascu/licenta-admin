@@ -8,6 +8,7 @@ from passlib.handlers.bcrypt import bcrypt
 from app.helpers.helpers_database import get_connection
 import app
 
+
 def create_users(users):
     conn = get_connection()
     with conn.cursor(pymysql.cursors.DictCursor) as cur:
