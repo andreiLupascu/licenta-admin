@@ -6,7 +6,7 @@ from flask_mail import Message, Mail
 from passlib.handlers.bcrypt import bcrypt
 
 from app.helpers.helpers_database import get_connection
-
+import app
 
 def create_users(users):
     conn = get_connection()
@@ -40,10 +40,9 @@ def create_users(users):
                     conn.commit()
                 email_list.append(username)
             conn.close()
-            mail = Mail(current_app)
             msg = Message(subject='Account created.', sender=current_app.config['MAIL_USERNAME'], recipients=email_list)
             msg.body = "Your account has been created, download the conference application to activate your account!"
-            mail.send(msg)
+            app.mail.send(msg)
             return f'Users created successfully.', 200
         except Exception as e:
             print(e)
